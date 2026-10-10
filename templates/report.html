@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>รายงาน — Fitness Class</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">🏋️ ระบบฟิตเนส <span>Fitness Class</span></div>
+    <nav><a href="/">จัดการข้อมูล</a><a href="/report" class="active">รายงาน</a></nav>
+  </header>
+  <main class="container">
+    <section class="cards">
+      <div class="metric"><div class="metric-num" id="m_mem">—</div><div class="metric-label">สมาชิก</div></div>
+      <div class="metric"><div class="metric-num" id="m_cls">—</div><div class="metric-label">คลาส</div></div>
+      <div class="metric"><div class="metric-num" id="m_trn">—</div><div class="metric-label">เทรนเนอร์</div></div>
+      <div class="metric"><div class="metric-num" id="m_bok">—</div><div class="metric-label">การจอง</div></div>
+    </section>
+    <section class="card">
+      <h3>📈 คลาสยอดนิยม (Most Booked)</h3>
+      <div id="popularStatus" class="status"></div>
+      <div class="table-wrap"><table id="popularTable"><thead></thead><tbody></tbody></table></div>
+    </section>
+    <section class="card">
+      <h3>🏅 เทรนเนอร์ที่มีผู้จองมากกว่าค่าเฉลี่ย (Above Average)</h3>
+      <div id="trainersStatus" class="status"></div>
+      <div class="table-wrap"><table id="trainersTable"><thead></thead><tbody></tbody></table></div>
+    </section>
+    <section class="card">
+      <h3>🧰 อุปกรณ์ที่ใช้ในแต่ละคลาส (Join 3 Tables)</h3>
+      <div id="equipStatus" class="status"></div>
+      <div class="table-wrap"><table id="equipTable"><thead></thead><tbody></tbody></table></div>
+    </section>
+  </main>
+  <script src="{{ url_for('static', filename='report.js') }}"></script>
+</body>
+</html>
