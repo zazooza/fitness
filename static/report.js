@@ -23,6 +23,8 @@ async function loadSummary() {
   if (d.classes !== undefined) $("#m_cls").textContent = d.classes;
   if (d.trainers !== undefined) $("#m_trn").textContent = d.trainers;
   if (d.bookings !== undefined) $("#m_bok").textContent = d.bookings;
+  if (d.equipment !== undefined) $("#m_eqp").textContent = d.equipment;
+  if (d.available_equipment !== undefined) $("#m_eqp_available").textContent = d.available_equipment;
 }
 async function loadAll() {
   loadSummary();

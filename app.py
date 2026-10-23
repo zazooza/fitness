@@ -51,7 +51,24 @@ def member_delete(_id):
 # ---- คลาสเรียน ----
 @app.route("/api/trainers", methods=["GET"])
 def trainers_list():
-    return safe(db.list_trainers)
+    filters = {k: v for k, v in request.args.items() if v}
+    return safe(db.search_trainers, filters)
+
+@app.route("/api/trainers", methods=["POST"])
+def trainer_create():
+    return safe(db.create_trainer, request.json)
+
+@app.route("/api/trainers/<int:_id>", methods=["GET"])
+def trainer_get(_id):
+    return safe(db.get_trainer, _id)
+
+@app.route("/api/trainers/<int:_id>", methods=["PUT"])
+def trainer_update(_id):
+    return safe(db.update_trainer, _id, request.json)
+
+@app.route("/api/trainers/<int:_id>", methods=["DELETE"])
+def trainer_delete(_id):
+    return safe(db.delete_trainer, _id)
 
 @app.route("/api/classes", methods=["GET"])
 def classes_list():
@@ -73,6 +90,28 @@ def class_update(_id):
 @app.route("/api/classes/<int:_id>", methods=["DELETE"])
 def class_delete(_id):
     return safe(db.delete_class, _id)
+
+# ---- อุปกรณ์ ----
+@app.route("/api/equipment", methods=["GET"])
+def equipment_list():
+    filters = {k: v for k, v in request.args.items() if v}
+    return safe(db.search_equipment, filters)
+
+@app.route("/api/equipment/<int:_id>", methods=["GET"])
+def equipment_get(_id):
+    return safe(db.get_equipment, _id)
+
+@app.route("/api/equipment", methods=["POST"])
+def equipment_create():
+    return safe(db.create_equipment, request.json)
+
+@app.route("/api/equipment/<int:_id>", methods=["PUT"])
+def equipment_update(_id):
+    return safe(db.update_equipment, _id, request.json)
+
+@app.route("/api/equipment/<int:_id>", methods=["DELETE"])
+def equipment_delete(_id):
+    return safe(db.delete_equipment, _id)
 
 # ---- การจอง ----
 @app.route("/api/bookings", methods=["GET"])

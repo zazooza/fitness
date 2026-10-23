@@ -57,12 +57,13 @@ def create_member(data):
         INSERT INTO member (name, gender, join_date, package_type, referred_id)
         VALUES (%s, %s, %s, %s, %s)
     """
+    referred_id = data.get('referred_id') or None
     params = (
         data.get('name'),
         data.get('gender'),
         data.get('join_date'),
         data.get('package_type'),
-        data.get('referred_id')
+        referred_id
     )
     return run_command(sql, params)
 
@@ -71,7 +72,7 @@ def update_member(member_id, data):
     """แก้ไข สมาชิก ตาม member_id"""
     sql = """
         UPDATE member 
-        SET name = %s, gender = %s, join_date = %s, package_type = %s
+        SET name = %s, gender = %s, join_date = %s, package_type = %s, referred_id = %s
         WHERE member_id = %s
     """
     params = (
@@ -79,6 +80,7 @@ def update_member(member_id, data):
         data.get('gender'),
         data.get('join_date'),
         data.get('package_type'),
+        data.get('referred_id') or None,
         member_id
     )
     return run_command(sql, params)
@@ -93,7 +95,72 @@ def delete_member(member_id):
 # ---------- คลาสเรียน (gym_class) ----------
 def list_trainers():
     """ดึงรายชื่อเทรนเนอร์สำหรับตัวเลือกในฟอร์มคลาส"""
-    return run_query("SELECT trainer_id, name FROM trainer ")
+    return run_query("SELECT trainer_id, name FROM trainer ORDER BY name")
+
+
+def search_trainers(filters):
+    sql = "SELECT trainer_id, name, specialty, phone FROM trainer WHERE 1=1"
+    params = []
+    if filters.get('name'):
+        sql += " AND name LIKE %s"
+        params.append(f"%{filters['name']}%")
+    if filters.get('specialty'):
+        sql += " AND specialty LIKE %s"
+        params.append(f"%{filters['specialty']}%")
+    sql += " ORDER BY trainer_id"
+    return run_query(sql, params)
+
+
+def get_trainer(trainer_id):
+    rows = run_query("SELECT * FROM trainer WHERE trainer_id = %s", (trainer_id,))
+    return rows[0] if rows else None
+
+
+def create_trainer(data):
+    sql = "INSERT INTO trainer (name, specialty, phone) VALUES (%s, %s, %s)"
+    return run_command(sql, (data.get('name'), data.get('specialty'), data.get('phone')))
+
+
+def update_trainer(trainer_id, data):
+    sql = "UPDATE trainer SET name = %s, specialty = %s, phone = %s WHERE trainer_id = %s"
+    return run_command(sql, (data.get('name'), data.get('specialty'), data.get('phone'), trainer_id))
+
+
+def delete_trainer(trainer_id):
+    return run_command("DELETE FROM trainer WHERE trainer_id = %s", (trainer_id,))
+
+
+# ---------- อุปกรณ์ (equipment) ----------
+def search_equipment(filters):
+    sql = "SELECT equip_id, name, zone, status, total_quantity FROM equipment WHERE 1=1"
+    params = []
+    for key in ('name', 'zone', 'status'):
+        if filters.get(key):
+            sql += f" AND {key} LIKE %s"
+            params.append(f"%{filters[key]}%")
+    sql += " ORDER BY equip_id"
+    return run_query(sql, params)
+
+
+def get_equipment(equip_id):
+    rows = run_query("SELECT * FROM equipment WHERE equip_id = %s", (equip_id,))
+    return rows[0] if rows else None
+
+
+def create_equipment(data):
+    sql = """INSERT INTO equipment (name, zone, status, total_quantity)
+             VALUES (%s, %s, %s, %s)"""
+    return run_command(sql, (data.get('name'), data.get('zone'), data.get('status', 'Available'), data.get('total_quantity', 0)))
+
+
+def update_equipment(equip_id, data):
+    sql = """UPDATE equipment SET name = %s, zone = %s, status = %s,
+             total_quantity = %s WHERE equip_id = %s"""
+    return run_command(sql, (data.get('name'), data.get('zone'), data.get('status'), data.get('total_quantity'), equip_id))
+
+
+def delete_equipment(equip_id):
+    return run_command("DELETE FROM equipment WHERE equip_id = %s", (equip_id,))
 
 
 def search_classes(filters):
@@ -207,7 +274,7 @@ def create_booking(data):
         data.get('member_id'),
         data.get('class_id'),
         data.get('book_date'),
-        data.get('status', 'confirmed')
+        data.get('status', 'CONFIRMED')
     )
     return run_command(sql, params)
 
@@ -244,12 +311,17 @@ def report_summary():
     sql_classes = "SELECT COUNT(*) AS total FROM gym_class"
     sql_bookings = "SELECT COUNT(*) AS total FROM booking"
     sql_trainers = "SELECT COUNT(*) AS total FROM trainer"
+    sql_equipment = "SELECT COUNT(*) AS total FROM equipment"
+    sql_available_equipment = """SELECT COALESCE(SUM(total_quantity), 0) AS total
+                                 FROM equipment WHERE status = 'available'"""
     
     return {
         "members": run_query(sql_members)[0]['total'],
         "classes": run_query(sql_classes)[0]['total'],
         "bookings": run_query(sql_bookings)[0]['total'],
-        "trainers": run_query(sql_trainers)[0]['total']
+        "trainers": run_query(sql_trainers)[0]['total'],
+        "equipment": run_query(sql_equipment)[0]['total'],
+        "available_equipment": run_query(sql_available_equipment)[0]['total']
     }
 
 

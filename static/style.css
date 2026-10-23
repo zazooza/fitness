@@ -51,7 +51,7 @@ tr:nth-child(even) td{background:var(--tint)}
 .status.err{color:#9A2E22;background:#FCE9E6;border:1px solid var(--coral);
   border-radius:8px;padding:12px 14px;font-weight:600}
 
-.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:20px}
 .metric{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;text-align:center;
   box-shadow:0 4px 14px rgba(40,60,110,.06)}
 .metric-num{font-size:34px;font-weight:800;color:var(--navy)}

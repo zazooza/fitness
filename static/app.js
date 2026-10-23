@@ -7,6 +7,18 @@ const GENDERS = [{ "value": "female", "label": "หญิง" },
 { "value": "male", "label": "ชาย" },
 { "value": "non_binary", "label": "นอนไบนารี" },
 { "value": "not_specified", "label": "ไม่ระบุ" }];
+const ROOMS = [
+  { "value": "room a", "label": "Room A" },
+  { "value": "room b", "label": "Room B" },
+  { "value": "studio 1", "label": "Studio 1" },
+  { "value": "studio 2", "label": "Studio 2" },
+  { "value": "studio 3", "label": "Studio 3" }
+];
+const EQUIPMENT_ZONES = [
+  { "value": "Free weight", "label": "Free Weight" },
+  { "value": "studio zone", "label": "Studio Zone" },
+  { "value": "cardio zone", "label": "Cardio Zone" }
+];
 
 const ENTITIES = {
   "members": {
@@ -17,7 +29,7 @@ const ENTITIES = {
       { "key": "name", "label": "ชื่อ", "type": "text" },
       {
         "key": "gender", "label": "เพศ", "type": "select",
-        "options": ["", "male", "female", "non_binary", "not_specified"]
+        "options": [{ "value": "", "label": "ทั้งหมด" }, ...GENDERS]
       },
       {
         "key": "package_type", "label": "แพ็กเกจ", "type": "select",
@@ -34,7 +46,9 @@ const ENTITIES = {
         "key": "package_type", "label": "แพ็กเกจ", "type": "select",
         "options": ["Regular", "Vip"]
       },
-      { "key": "referred_id", "label": "แนะนำโดย (รหัสสมาชิก)", "type": "text" }]
+      { "key": "referred_id", "label": "แนะนำโดย", "type": "select",
+        "options": [{ "value": "", "label": "ไม่มีผู้แนะนำ" }]
+       }]
   },
   "classes": {
     "label": "คลาสเรียน",
@@ -42,11 +56,11 @@ const ENTITIES = {
     "idKey": "class_id",
     "search": [
       { "key": "name", "label": "ชื่อคลาส", "type": "text" },
-      { "key": "room", "label": "ห้อง", "type": "text" }],
+      { "key": "room", "label": "ห้อง", "type": "select", "options": [{ "value": "", "label": "ทั้งหมด" }, ...ROOMS] }],
     "form": [
       { "key": "name", "label": "ชื่อคลาส", "type": "text" },
       { "key": "trainer_id", "label": "เทรนเนอร์", "type": "select", "options": [] },
-      { "key": "room", "label": "ห้อง", "type": "text" },
+      { "key": "room", "label": "ห้อง", "type": "select", "options": [{ "value": "", "label": "เลือกห้อง" }, ...ROOMS] },
       { "key": "capacity", "label": "จำนวนรับ", "type": "number" },
       { "key": "schedule_time", "label": "เวลา", "type": "datetime-local" }]
   },
@@ -59,7 +73,7 @@ const ENTITIES = {
       { "key": "class_id", "label": "รหัสคลาส", "type": "text" },
       {
         "key": "status", "label": "สถานะ", "type": "select",
-        "options": ["", "confirmed", "cancelled"]
+        "options": ["", "CONFIRMED", "CANCELLED"]
       }],
     "form": [
       { "key": "member_id", "label": "รหัสสมาชิก", "type": "text" },
@@ -67,10 +81,35 @@ const ENTITIES = {
       { "key": "book_date", "label": "วันที่จอง", "type": "datetime-local" },
       {
         "key": "status", "label": "สถานะ", "type": "select",
-        "options": ["confirmed", "cancelled"]
+        "options": ["CONFIRMED", "CANCELLED"]
       }]
+  },
+  "trainers": {
+    "label": "เทรนเนอร์", "api": "/api/trainers", "idKey": "trainer_id",
+    "search": [
+      { "key": "name", "label": "ชื่อเทรนเนอร์", "type": "text" },
+      { "key": "specialty", "label": "ความเชี่ยวชาญ", "type": "text" }
+    ],
+    "form": [
+      { "key": "name", "label": "ชื่อเทรนเนอร์", "type": "text" },
+      { "key": "specialty", "label": "ความเชี่ยวชาญ", "type": "text" },
+      { "key": "phone", "label": "เบอร์โทรศัพท์", "type": "tel" }
+    ]
+  },
+  "equipment": {
+    "label": "อุปกรณ์", "api": "/api/equipment", "idKey": "equip_id",
+    "search": [
+      { "key": "name", "label": "ชื่ออุปกรณ์", "type": "text" },
+      { "key": "zone", "label": "พื้นที่", "type": "select", "options": [{ "value": "", "label": "ทุกพื้นที่" }, ...EQUIPMENT_ZONES] },
+      { "key": "status", "label": "สถานะ", "type": "select", "options": ["", "Available", "Maintenance"] }
+    ],
+    "form": [
+      { "key": "name", "label": "ชื่ออุปกรณ์", "type": "text" },
+      { "key": "zone", "label": "พื้นที่", "type": "select", "options": [{ "value": "", "label": "เลือกพื้นที่" }, ...EQUIPMENT_ZONES] },
+      { "key": "status", "label": "สถานะ", "type": "select", "options": ["Available", "Maintenance"] },
+      { "key": "total_quantity", "label": "จำนวนทั้งหมด", "type": "number" }
+    ]
   }
-
 };
 
 let current = Object.keys(ENTITIES)[0];
@@ -110,6 +149,19 @@ async function refreshBookingOptions() {
   ];
   ENTITIES.bookings.form.find(f => f.key === "class_id").options = [
     { value: "", label: "เลือกคลาส" }, ...classOptions
+  ];
+}
+
+async function refreshMemberOptions() {
+  const response = await api(ENTITIES.members.api);
+  if (!response.ok) return;
+  const field = ENTITIES.members.form.find(f => f.key === "referred_id");
+  field.options = [
+    { value: "", label: "ไม่มีผู้แนะนำ" },
+    ...(response.data || []).filter(member => String(member.member_id) !== String(editingId)).map(member => ({
+      value: member.member_id,
+      label: member.name + " (#" + member.member_id + ")"
+    }))
   ];
 }
 
@@ -155,6 +207,7 @@ function renderTable(r) {
 }
 async function openForm(title, data = {}) {
   const cfg = ENTITIES[current];
+  if (current === "members") await refreshMemberOptions();
   if (current === "classes") await refreshTrainerOptions();
   if (current === "bookings") await refreshBookingOptions();
   $("#modalTitle").textContent = title;

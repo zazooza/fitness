@@ -46,7 +46,7 @@ create table booking (
     member_id  int not null,
     class_id   int not null,
     book_date  datetime not null,
-    status     varchar(50) not null default 'confirmed',
+    status     varchar(50) not null default 'CONFIRMED',
     
     foreign key (member_id)
     	references member(member_id),
@@ -59,7 +59,7 @@ create table equipment (
     equip_id       int auto_increment primary key,
     name           varchar(100) not null,
     zone           varchar(50),
-    status         varchar(50) not null default 'available',
+    status         varchar(50) not null default 'Available',
     total_quantity int not null default 0
 );
 
@@ -135,11 +135,11 @@ insert into booking (
 	status
 ) 
 values
-	(1, 1, '2026-10-01 08:30:00', 'confirmed'),
-	(2, 2, '2026-10-01 09:15:00', 'confirmed'),
-	(3, 1, '2026-10-02 10:00:00', 'confirmed'),
-	(4, 4, '2026-10-03 11:20:00', 'confirmed'),
-	(5, 3, '2026-10-04 14:00:00', 'cancelled');
+	(1, 1, '2026-10-01 08:30:00', 'CONFIRMED'),
+	(2, 2, '2026-10-01 09:15:00', 'CONFIRMED'),
+	(3, 1, '2026-10-02 10:00:00', 'CONFIRMED'),
+	(4, 4, '2026-10-03 11:20:00', 'CONFIRMED'),
+	(5, 3, '2026-10-04 14:00:00', 'CANCELLED');
 
 -- เพิ่มข้อมูลอุปกรณ์ (equipment)
 insert into equipment (
@@ -149,12 +149,12 @@ insert into equipment (
 	total_quantity
 ) 
 values 
-	('dumbbell set 10kg'	, 'free weight', 'available', 20),
-	('yoga mat'				, 'studio zone', 'available', 30),
-	('kettlebell 16kg'		, 'free weight', 'available', 12),
-	('jump rope'			, 'cardio zone', 'available', 25),
-	('barbell 20kg'			, 'free weight', 'available', 15),
-	('resistance band'		, 'studio zone', 'available', 40);
+	('dumbbell set 10kg'	, 'Free weight', 'Available', 20),
+	('yoga mat'				, 'studio zone', 'Available', 30),
+	('kettlebell 16kg'		, 'Free weight', 'Available', 12),
+	('jump rope'			, 'cardio zone', 'Available', 25),
+	('barbell 20kg'			, 'Free weight', 'Available', 15),
+	('resistance band'		, 'studio zone', 'Available', 40);
 
 -- เพิ่มข้อมูลการใช้อุปกรณ์ในคลาส (class_equipment)
 insert into class_equipment (
