@@ -516,6 +516,7 @@ def report_popular_classes():
     """
     return run_query(sql)
 
+
 def report_trainers_above_avg():
     """🏅 เทรนเนอร์ที่มีผู้จองมากกว่าค่าเฉลี่ย (Above Average)
     คำใบ้: JOIN booking→gym_class→trainer, GROUP BY trainer, HAVING COUNT(*) > (subquery AVG)"""
