@@ -8,16 +8,16 @@ const GENDERS = [{ "value": "female", "label": "หญิง" },
 { "value": "non_binary", "label": "นอนไบนารี" },
 { "value": "not_specified", "label": "ไม่ระบุ" }];
 const ROOMS = [
-  { "value": "room a", "label": "Room A" },
-  { "value": "room b", "label": "Room B" },
-  { "value": "studio 1", "label": "Studio 1" },
-  { "value": "studio 2", "label": "Studio 2" },
-  { "value": "studio 3", "label": "Studio 3" }
+  { "value": "room a", "label": "room a" },
+  { "value": "room b", "label": "room b" },
+  { "value": "studio 1", "label": "studio 1" },
+  { "value": "studio 2", "label": "studio 2" },
+  { "value": "studio 3", "label": "studio 3" }
 ];
 const EQUIPMENT_ZONES = [
-  { "value": "Free weight", "label": "Free Weight" },
-  { "value": "studio zone", "label": "Studio Zone" },
-  { "value": "cardio zone", "label": "Cardio Zone" }
+  { "value": "free weight", "label": "free Weight" },
+  { "value": "studio  zone", "label": "studio  Zone" },
+  { "value": "cardio zone", "label": "cardio Zone" }
 ];
 
 const ENTITIES = {
@@ -59,10 +59,10 @@ const ENTITIES = {
       { "key": "room", "label": "ห้อง", "type": "select", "options": [{ "value": "", "label": "ทั้งหมด" }, ...ROOMS] }],
     "form": [
       { "key": "name", "label": "ชื่อคลาส", "type": "text" },
-      { "key": "trainer_id", "label": "เทรนเนอร์", "type": "select", "options": [] },
+      { "key": "trainer_id", "label": "เทรนเนอร์", "type": "select", "options": [{ "value": "", "label": "เลือกเทรนเนอร์" }] },
       { "key": "room", "label": "ห้อง", "type": "select", "options": [{ "value": "", "label": "เลือกห้อง" }, ...ROOMS] },
-      { "key": "capacity", "label": "จำนวนรับ", "type": "number" },
-      { "key": "schedule_time", "label": "เวลา", "type": "datetime-local" }]
+      { "key": "capacity", "label": "จำนวนรับ", "type": "number", "min": 1 },
+      { "key": "schedule_time", "label": "เวลา", "type": "date" }]
   },
   "bookings": {
     "label": "การจอง",
@@ -70,15 +70,15 @@ const ENTITIES = {
     "idKey": "booking_id",
     "search": [
       { "key": "name", "label": "ชื่อสมาชิก", "type": "text" },
-      { "key": "class_id", "label": "รหัสคลาส", "type": "text" },
+      { "key": "class_name", "label": "ชื่อคลาส", "type": "select", "options": [""] },
       {
         "key": "status", "label": "สถานะ", "type": "select",
         "options": ["", "CONFIRMED", "CANCELLED"]
       }],
     "form": [
-      { "key": "member_id", "label": "รหัสสมาชิก", "type": "text" },
-      { "key": "class_id", "label": "รหัสคลาส", "type": "text" },
-      { "key": "book_date", "label": "วันที่จอง", "type": "datetime-local" },
+      { "key": "member_id", "label": "สมาชิก", "type": "select", "options": [{ "value": "", "label": "เลือกสมาชิก" }] },
+      { "key": "class_id", "label": "คลาส", "type": "select", "options": [{ "value": "", "label": "เลือกคลาส" }] },
+      { "key": "book_date", "label": "วันที่จอง", "type": "date" },
       {
         "key": "status", "label": "สถานะ", "type": "select",
         "options": ["CONFIRMED", "CANCELLED"]
@@ -100,14 +100,26 @@ const ENTITIES = {
     "label": "อุปกรณ์", "api": "/api/equipment", "idKey": "equip_id",
     "search": [
       { "key": "name", "label": "ชื่ออุปกรณ์", "type": "text" },
-      { "key": "zone", "label": "พื้นที่", "type": "select", "options": [{ "value": "", "label": "ทุกพื้นที่" }, ...EQUIPMENT_ZONES] },
-      { "key": "status", "label": "สถานะ", "type": "select", "options": ["", "Available", "Maintenance"] }
+      { "key": "zone", "label": "พื้นที่", "type": "select", "options": [{ "value": "", "label": "ทั้งหมด" }, ...EQUIPMENT_ZONES] },
+      { "key": "status", "label": "สถานะ", "type": "select", "options": ["", "available", "unavailable"] }
     ],
     "form": [
       { "key": "name", "label": "ชื่ออุปกรณ์", "type": "text" },
-      { "key": "zone", "label": "พื้นที่", "type": "select", "options": [{ "value": "", "label": "เลือกพื้นที่" }, ...EQUIPMENT_ZONES] },
-      { "key": "status", "label": "สถานะ", "type": "select", "options": ["Available", "Maintenance"] },
-      { "key": "total_quantity", "label": "จำนวนทั้งหมด", "type": "number" }
+      { "key": "zone", "label": "พื้นที่", "type": "select", "options": [{ "value": "", "label": "ทั้งหมด" }, ...EQUIPMENT_ZONES] },
+      { "key": "status", "label": "สถานะ", "type": "select", "options": ["available", "unavailable"] },
+      { "key": "total_quantity", "label": "จำนวนทั้งหมด", "type": "number", "min": 0 }
+    ]
+  },
+  "class_equipment": {
+    "label": "อุปกรณ์ประจำคลาส", "api": "/api/class-equipment", "idKey": "link_id", "hideId": true,
+    "search": [
+      { "key": "class_name", "label": "คลาส", "type": "select", "options": [{ "value": "", "label": "ทุกคลาส" }] },
+      { "key": "equipment_name", "label": "อุปกรณ์", "type": "select", "options": [{ "value": "", "label": "ทุกอุปกรณ์" }] }
+    ],
+    "form": [
+      { "key": "class_id", "label": "คลาส", "type": "select", "required": true, "options": [{ "value": "", "label": "เลือกคลาส" }] },
+      { "key": "equip_id", "label": "อุปกรณ์", "type": "select", "required": true, "options": [{ "value": "", "label": "เลือกอุปกรณ์" }] },
+      { "key": "quantity", "label": "จำนวนที่ใช้", "type": "number", "min": 1, "required": true }
     ]
   }
 };
@@ -128,6 +140,27 @@ async function refreshTrainerOptions() {
   }));
 }
 
+async function refreshClassEquipmentOptions() {
+  const [classesResponse, equipmentResponse] = await Promise.all([
+    api(ENTITIES.classes.api), api(ENTITIES.equipment.api)
+  ]);
+  if (!classesResponse.ok || !equipmentResponse.ok) return;
+  const classes = (classesResponse.data || []).map(cls => ({ value: cls.class_id, label: cls.name }));
+  const equipment = (equipmentResponse.data || []).map(item => ({ value: item.equip_id, label: item.name }));
+  ENTITIES.class_equipment.search.find(f => f.key === "class_name").options = [
+    { value: "", label: "ทุกคลาส" }, ...classes.map(item => ({ value: item.label, label: item.label }))
+  ];
+  ENTITIES.class_equipment.search.find(f => f.key === "equipment_name").options = [
+    { value: "", label: "ทุกอุปกรณ์" }, ...equipment.map(item => ({ value: item.label, label: item.label }))
+  ];
+  ENTITIES.class_equipment.form.find(f => f.key === "class_id").options = [
+    { value: "", label: "เลือกคลาส" }, ...classes
+  ];
+  ENTITIES.class_equipment.form.find(f => f.key === "equip_id").options = [
+    { value: "", label: "เลือกอุปกรณ์" }, ...equipment
+  ];
+}
+
 async function refreshBookingOptions() {
   const [membersResponse, classesResponse] = await Promise.all([
     api(ENTITIES.members.api),
@@ -143,7 +176,11 @@ async function refreshBookingOptions() {
     value: cls.class_id,
     label: cls.name
   }));
-  ENTITIES.bookings.search.find(f => f.key === "class_id").options = ["", ...classOptions];
+  const classNameOptions = (classesResponse.data || []).map(cls => ({
+    value: cls.name,
+    label: cls.name
+  }));
+  ENTITIES.bookings.search.find(f => f.key === "class_name").options = ["", ...classNameOptions];
   ENTITIES.bookings.form.find(f => f.key === "member_id").options = [
     { value: "", label: "เลือกสมาชิก" }, ...memberOptions
   ];
@@ -167,18 +204,23 @@ async function refreshMemberOptions() {
 
 function fieldHtml(f, prefix, value = "") {
   let input;
+  const required = f.required ? " required" : "";
   if (f.type === "select") {
-    input = '<select id="' + prefix + f.key + '">' +
+    input = '<select id="' + prefix + f.key + '"' + required + '>' +
       f.options.map(o => {
         const option = typeof o === "object" ? o : { value: o, label: o || "ทั้งหมด" };
         return '<option value="' + option.value + '"' + (String(option.value) === String(value ?? "") ? " selected" : "") + '>' + option.label + '</option>';
       }).join("") + '</select>';
-  } else { input = '<input id="' + prefix + f.key + '" type="' + f.type + '" value="' + (value ?? "") + '">'; }
+  } else {
+    const min = f.min !== undefined ? ' min="' + f.min + '" step="1"' : "";
+    input = '<input id="' + prefix + f.key + '" type="' + f.type + '"' + min + required + ' value="' + (value ?? "") + '">';
+  }
   return '<div class="field"><label>' + f.label + '</label>' + input + '</div>';
 }
 async function buildSearch() {
   const cfg = ENTITIES[current];
   if (current === "bookings") await refreshBookingOptions();
+  if (current === "class_equipment") await refreshClassEquipmentOptions();
   $("#searchTitle").textContent = cfg.label;
   $("#searchFields").innerHTML = cfg.search.map(f => fieldHtml(f, "s_")).join("");
 }
@@ -197,12 +239,38 @@ function renderTable(r) {
   if (rows.length === 0) { setStatus(st, "ไม่พบข้อมูล"); return; }
   setStatus(st, "พบ " + rows.length + " รายการ");
   const cols = Object.keys(rows[0]);
+  if (current === "trainers") {
+    const idKey = ENTITIES.trainers.idKey;
+    cols.splice(cols.indexOf(idKey), 1);
+    cols.unshift(idKey);
+  }
+  if (current === "classes") {
+    const classOrder = ["class_id", "name", "room", "trainer_name", "schedule_time", "capacity", "remain"];
+    cols.splice(0, cols.length, ...classOrder.filter(column => cols.includes(column)));
+  }
+  if (current === "members") {
+    const memberOrder = ["member_id", "name", "gender", "join_date", "package_type", "referred_id"];
+    cols.splice(0, cols.length, ...memberOrder.filter(column => cols.includes(column)));
+  }
+  if (current === "bookings") {
+    const bookingOrder = ["booking_id", "member_name", "class_name", "book_date", "status"];
+    cols.splice(0, cols.length, ...bookingOrder.filter(column => cols.includes(column)));
+  }
+  if (current === "class_equipment") {
+    const assignmentOrder = ["class_name", "equipment_name", "quantity"];
+    cols.splice(0, cols.length, ...assignmentOrder.filter(column => cols.includes(column)));
+  }
+  if (current === "equipment") {
+    const equipmentOrder = ["equip_id", "name", "zone", "total_quantity", "remain", "status"];
+    cols.splice(0, cols.length, ...equipmentOrder.filter(column => cols.includes(column)));
+  }
   head.innerHTML = cols.map(c => "<th>" + c + "</th>").join("") + "<th>จัดการ</th>";
   body.innerHTML = rows.map(row => {
     const id = row[ENTITIES[current].idKey];
+    const idArg = typeof id === "string" ? "'" + id + "'" : id;
     return "<tr>" + cols.map(c => "<td>" + (row[c] ?? "—") + "</td>").join("") +
-      '<td><button class="btn sm" onclick="editRow(' + id + ')">แก้ไข</button> ' +
-      '<button class="btn sm del" onclick="deleteRow(' + id + ')">ลบ</button></td></tr>';
+      '<td><button class="btn sm" onclick="editRow(' + idArg + ')">แก้ไข</button> ' +
+      '<button class="btn sm del" onclick="deleteRow(' + idArg + ')">ลบ</button></td></tr>';
   }).join("");
 }
 async function openForm(title, data = {}) {
@@ -210,6 +278,7 @@ async function openForm(title, data = {}) {
   if (current === "members") await refreshMemberOptions();
   if (current === "classes") await refreshTrainerOptions();
   if (current === "bookings") await refreshBookingOptions();
+  if (current === "class_equipment") await refreshClassEquipmentOptions();
   $("#modalTitle").textContent = title;
   $("#formFields").innerHTML = cfg.form.map(f => fieldHtml(f, "f_", data[f.key])).join("");
   $("#modal").classList.remove("hidden");
@@ -229,6 +298,10 @@ async function deleteRow(id) {
 }
 async function save() {
   const cfg = ENTITIES[current], data = collectForm();
+  for (const field of cfg.form) {
+    const input = $("#f_" + field.key);
+    if (!input.checkValidity()) { input.reportValidity(); return; }
+  }
   const opts = { method: editingId ? "PUT" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) };
   const r = await api(editingId ? cfg.api + "/" + editingId : cfg.api, opts);
   if (!r.ok) { alert((r.todo ? "🚧 " : "⚠️ ") + r.error); return; }

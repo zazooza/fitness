@@ -3,16 +3,32 @@
 #  รัน:  python app.py  แล้วเปิด http://127.0.0.1:5000
 # ============================================================
 from flask import Flask, request, jsonify, render_template
+from datetime import date, datetime
 import db
 
 app = Flask(__name__)
 
 
+def json_safe(value):
+    """แปลงวันที่เป็น YYYY-MM-DD ก่อนส่ง JSON เพื่อไม่ให้ Flask เติมเวลา/GMT"""
+    if isinstance(value, datetime):
+        return value.date().isoformat()
+    if isinstance(value, date):
+        return value.isoformat()
+    if isinstance(value, dict):
+        return {key: json_safe(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [json_safe(item) for item in value]
+    return value
+
+
 def safe(fn, *args, **kwargs):
     try:
-        return jsonify({"ok": True, "data": fn(*args, **kwargs)})
+        return jsonify({"ok": True, "data": json_safe(fn(*args, **kwargs))})
     except NotImplementedError as e:
         return jsonify({"ok": False, "todo": True, "error": str(e)}), 501
+    except ValueError as e:
+        return jsonify({"ok": False, "error": str(e)}), 400
     except Exception as e:
         return jsonify({"ok": False, "error": f"{type(e).__name__}: {e}"}), 500
 
@@ -112,6 +128,47 @@ def equipment_update(_id):
 @app.route("/api/equipment/<int:_id>", methods=["DELETE"])
 def equipment_delete(_id):
     return safe(db.delete_equipment, _id)
+
+# ---- อุปกรณ์ที่ใช้ในแต่ละคลาส ----
+@app.route("/api/class-equipment", methods=["GET"])
+def class_equipment_list():
+    filters = {k: v for k, v in request.args.items() if v}
+    return safe(db.search_class_equipment, filters)
+
+def parse_class_equipment_id(link_id):
+    try:
+        class_id, equip_id = link_id.split("-", 1)
+        return int(class_id), int(equip_id)
+    except (ValueError, AttributeError):
+        raise ValueError("รหัสรายการอุปกรณ์ประจำคลาสไม่ถูกต้อง")
+
+@app.route("/api/class-equipment", methods=["POST"])
+def class_equipment_create():
+    return safe(db.create_class_equipment, request.get_json(silent=True) or {})
+
+@app.route("/api/class-equipment/<link_id>", methods=["GET"])
+def class_equipment_get(link_id):
+    try:
+        class_id, equip_id = parse_class_equipment_id(link_id)
+    except ValueError as e:
+        return jsonify({"ok": False, "error": str(e)}), 400
+    return safe(db.get_class_equipment, class_id, equip_id)
+
+@app.route("/api/class-equipment/<link_id>", methods=["PUT"])
+def class_equipment_update(link_id):
+    try:
+        class_id, equip_id = parse_class_equipment_id(link_id)
+    except ValueError as e:
+        return jsonify({"ok": False, "error": str(e)}), 400
+    return safe(db.update_class_equipment, class_id, equip_id, request.get_json(silent=True) or {})
+
+@app.route("/api/class-equipment/<link_id>", methods=["DELETE"])
+def class_equipment_delete(link_id):
+    try:
+        class_id, equip_id = parse_class_equipment_id(link_id)
+    except ValueError as e:
+        return jsonify({"ok": False, "error": str(e)}), 400
+    return safe(db.delete_class_equipment, class_id, equip_id)
 
 # ---- การจอง ----
 @app.route("/api/bookings", methods=["GET"])

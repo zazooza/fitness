@@ -34,7 +34,7 @@ create table gym_class (
     name          varchar(100) not null,
     room          varchar(20),
     capacity      int not null,
-    schedule_time datetime not null,
+    schedule_time date not null,
     
     foreign key (trainer_id) 
     	references trainer(trainer_id)
@@ -45,7 +45,7 @@ create table booking (
     booking_id int auto_increment primary key,
     member_id  int not null,
     class_id   int not null,
-    book_date  datetime not null,
+    book_date  date not null,
     status     varchar(50) not null default 'CONFIRMED',
     
     foreign key (member_id)
@@ -59,7 +59,7 @@ create table equipment (
     equip_id       int auto_increment primary key,
     name           varchar(100) not null,
     zone           varchar(50),
-    status         varchar(50) not null default 'Available',
+    status         varchar(50) not null default 'available',
     total_quantity int not null default 0
 );
 
@@ -69,6 +69,7 @@ create table class_equipment (
     equip_id int not null,
     quantity int not null,
     primary key (class_id, equip_id),
+    check (quantity > 0),
     
     foreign key (class_id) 
     	references gym_class(class_id),
@@ -89,14 +90,14 @@ insert into member (
 	referred_id
 )
 values 
-	('itadori yuji'		, 'male'			,'2026-01-15', 'regular'	,null),
-	('fushiguro megumi'	, 'male'			,'2026-02-01', 'regular'	,1),
-	('kugisaki nobara'	, 'female'			,'2026-02-10', 'vip'		,1),
+	('itadori yuji'		, 'male'			,'2026-01-15', 'Regular'	,null),
+	('fushiguro megumi'	, 'male'			,'2026-02-01', 'Regular'	,1),
+	('kugisaki nobara'	, 'female'			,'2026-02-10', 'Vip'		,1),
 	
-	('okkotsu yuta'		, 'male'			,'2026-02-01', 'regular'	,null),
-	('zenin maki'		, 'female'			,'2026-02-01', 'vip'		,4),
-	('inumaki toge'		, 'male'			,'2026-02-01', 'regular'	,4),
-	('panda'			, 'not_specified'	,'2026-02-01', 'regular'	,4);
+	('okkotsu yuta'		, 'male'			,'2026-02-01', 'Regular'	,null),
+	('zenin maki'		, 'female'			,'2026-02-01', 'Vip'		,4),
+	('inumaki toge'		, 'male'			,'2026-02-01', 'Regular'	,4),
+	('panda'			, 'not_specified'	,'2026-02-01', 'Regular'	,4);
 
 -- เพิ่มข้อมูลผู้ฝึกสอน (trainer)
 insert into trainer (
@@ -120,12 +121,12 @@ insert into gym_class (
 	schedule_time
 ) 
 values 
-	(1, 'power weightlifting'	, 'room a'		, 15, '2026-10-10 09:00:00'),
-	(2, 'cardio burn'			, 'studio 1'	, 20, '2026-10-10 10:30:00'),
-	(3, 'crossfit challenge'	, 'room b'		, 12, '2026-10-11 14:00:00'),
-	(4, 'morning yoga'			, 'studio 2'	, 15, '2026-10-12 08:00:00'),
-	(1, 'advanced bodybuilding'	, 'room a'		, 10, '2026-10-13 16:00:00'),
-	(5, 'hiit cardio extreme'	, 'studio 3'	, 20, '2026-10-14 17:00:00');
+	(1, 'power weightlifting'	, 'room a'		, 15, '2026-10-10'),
+	(2, 'cardio burn'			, 'studio  1'	, 20, '2026-10-10'),
+	(3, 'crossfit challenge'	, 'room b'		, 12, '2026-10-11'),
+	(4, 'morning yoga'			, 'studio  2'	, 15, '2026-10-12'),
+	(1, 'advanced bodybuilding'	, 'room a'		, 10, '2026-10-13'),
+	(5, 'hiit cardio extreme'	, 'studio  3'	, 20, '2026-10-14');
 
 -- เพิ่มข้อมูลการจอง (booking)
 insert into booking (
@@ -135,11 +136,11 @@ insert into booking (
 	status
 ) 
 values
-	(1, 1, '2026-10-01 08:30:00', 'CONFIRMED'),
-	(2, 2, '2026-10-01 09:15:00', 'CONFIRMED'),
-	(3, 1, '2026-10-02 10:00:00', 'CONFIRMED'),
-	(4, 4, '2026-10-03 11:20:00', 'CONFIRMED'),
-	(5, 3, '2026-10-04 14:00:00', 'CANCELLED');
+    (1, 1, '2026-10-01', 'CONFIRMED'),
+    (2, 2, '2026-10-01', 'CONFIRMED'),
+    (3, 1, '2026-10-02', 'CONFIRMED'),
+    (4, 4, '2026-10-03', 'CONFIRMED'),
+    (5, 3, '2026-10-04', 'CANCELLED');
 
 -- เพิ่มข้อมูลอุปกรณ์ (equipment)
 insert into equipment (
@@ -149,12 +150,12 @@ insert into equipment (
 	total_quantity
 ) 
 values 
-	('dumbbell set 10kg'	, 'Free weight', 'Available', 20),
-	('yoga mat'				, 'studio zone', 'Available', 30),
-	('kettlebell 16kg'		, 'Free weight', 'Available', 12),
-	('jump rope'			, 'cardio zone', 'Available', 25),
-	('barbell 20kg'			, 'Free weight', 'Available', 15),
-	('resistance band'		, 'studio zone', 'Available', 40);
+	('dumbbell set 10kg'	, 'free weight', 'available', 20),
+	('yoga mat'				, 'studio  zone', 'available', 30),
+	('kettlebell 16kg'		, 'free weight', 'available', 32),
+	('jump rope'			, 'cardio zone', 'available', 25),
+	('barbell 20kg'			, 'free weight', 'available', 15),
+	('resistance band'		, 'studio  zone', 'available', 40);
 
 -- เพิ่มข้อมูลการใช้อุปกรณ์ในคลาส (class_equipment)
 insert into class_equipment (
