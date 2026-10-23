@@ -9,7 +9,7 @@ import config
 def get_connection():
     return mysql.connector.connect(
         host=config.DB_HOST, user=config.DB_USER, password=config.DB_PASSWORD,
-        database=config.DB_NAME, port=config.DB_PORT)
+        database=config.DB_NAME, port=config.DB_PORT, use_pure=True)
 
 
 def run_query(sql, params=None):
@@ -52,16 +52,17 @@ def get_member(member_id):
 
 
 def create_member(data):
-    """เพิ่ม สมาชิก ใหม่ — data มีคีย์: name, gender, join_date, package_type"""
+    """เพิ่ม สมาชิก ใหม่ — data มีคีย์: name, gender, join_date, package_type,referred_id"""
     sql = """
-        INSERT INTO member (name, gender, join_date, package_type)
-        VALUES (%s, %s, %s, %s)
+        INSERT INTO member (name, gender, join_date, package_type, referred_id)
+        VALUES (%s, %s, %s, %s, %s)
     """
     params = (
         data.get('name'),
         data.get('gender'),
         data.get('join_date'),
-        data.get('package_type')
+        data.get('package_type'),
+        data.get('referred_id')
     )
     return run_command(sql, params)
 
@@ -206,7 +207,7 @@ def create_booking(data):
         data.get('member_id'),
         data.get('class_id'),
         data.get('book_date'),
-        data.get('status', 'CONFIRMED')
+        data.get('status', 'confirmed')
     )
     return run_command(sql, params)
 

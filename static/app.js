@@ -3,10 +3,10 @@
 //  ปรับช่องค้นหา/ฟอร์มได้ที่ตัวแปร ENTITIES ด้านล่าง
 // ============================================================
 // value = ค่าที่เก็บใน database (ต้องตรงกับ ENUM), label = ข้อความที่แสดงบนหน้าจอ
-const GENDERS = [{ "value": "female"        , "label": "หญิง" },
-                 { "value": "male"          , "label": "ชาย" },
-                 { "value": "non_binary"    , "label": "นอนไบนารี" }, 
-                 { "value": "not_specified" , "label": "ไม่ระบุ" }];
+const GENDERS = [{ "value": "female", "label": "หญิง" },
+{ "value": "male", "label": "ชาย" },
+{ "value": "non_binary", "label": "นอนไบนารี" },
+{ "value": "not_specified", "label": "ไม่ระบุ" }];
 
 const ENTITIES = {
   "members": {
@@ -14,31 +14,42 @@ const ENTITIES = {
     "api": "/api/members",
     "idKey": "member_id",
     "search": [
-      { "key": "name"   , "label": "ชื่อ"   , "type": "text" },
-      { "key": "gender" , "label": "เพศ"  , "type": "select", 
-        "options": [ "", "male", "female", "non_binary", "not_specified" ] },
-      { "key": "package_type", "label": "แพ็กเกจ", "type": "select",
-        "options": [ "", "Regular", "Vip" ] } ],
-      "form": [
       { "key": "name", "label": "ชื่อ", "type": "text" },
-      { "key": "gender", "label": "เพศ", "type": "select",
-        "options": [ "male", "female", "non_binary", "not_specified" ] },
-      { "key": "join_date", "label": "วันที่สมัคร", "type": "date"},
-      { "key": "package_type", "label": "แพ็กเกจ", "type": "select",
-        "options": [ "Regular", "Vip" ] } ] },
+      {
+        "key": "gender", "label": "เพศ", "type": "select",
+        "options": ["", "male", "female", "non_binary", "not_specified"]
+      },
+      {
+        "key": "package_type", "label": "แพ็กเกจ", "type": "select",
+        "options": ["", "Regular", "Vip"]
+      }],
+    "form": [
+      { "key": "name", "label": "ชื่อ", "type": "text" },
+      {
+        "key": "gender", "label": "เพศ", "type": "select",
+        "options": ["male", "female", "non_binary", "not_specified"]
+      },
+      { "key": "join_date", "label": "วันที่สมัคร", "type": "date" },
+      {
+        "key": "package_type", "label": "แพ็กเกจ", "type": "select",
+        "options": ["Regular", "Vip"]
+      },
+      { "key": "referred_id", "label": "แนะนำโดย (รหัสสมาชิก)", "type": "text" }]
+  },
   "classes": {
     "label": "คลาสเรียน",
     "api": "/api/classes",
     "idKey": "class_id",
     "search": [
-      { "key": "name", "label": "ชื่อคลาส", "type": "text"},
-      { "key": "room", "label": "ห้อง", "type": "text" } ],
+      { "key": "name", "label": "ชื่อคลาส", "type": "text" },
+      { "key": "room", "label": "ห้อง", "type": "select","options": [] }],
     "form": [
       { "key": "name", "label": "ชื่อคลาส", "type": "text" },
-      { "key": "trainer_id", "label": "เทรนเนอร์", "type": "select", "options": []},
-      { "key": "room", "label": "ห้อง", "type": "text"},
+      { "key": "trainer_id", "label": "เทรนเนอร์", "type": "select", "options": [] },
+      { "key": "room", "label": "ห้อง", "type": "text" },
       { "key": "capacity", "label": "จำนวนรับ", "type": "number" },
-      { "key": "schedule_time", "label": "เวลา", "type": "datetime-local" } ] },
+      { "key": "schedule_time", "label": "เวลา", "type": "datetime-local" }]
+  },
   "bookings": {
     "label": "การจอง",
     "api": "/api/bookings",
@@ -46,15 +57,20 @@ const ENTITIES = {
     "search": [
       { "key": "name", "label": "ชื่อสมาชิก", "type": "text" },
       { "key": "class_id", "label": "รหัสคลาส", "type": "text" },
-      { "key": "status", "label": "สถานะ", "type": "select",
-        "options": [ "", "CONFIRMED", "CANCELLED" ] } ],
+      {
+        "key": "status", "label": "สถานะ", "type": "select",
+        "options": ["", "confirmed", "cancelled"]
+      }],
     "form": [
-      { "key": "member_id", "label": "รหัสสมาชิก", "type": "text"},
-      { "key": "class_id", "label": "รหัสคลาส", "type": "text"},
+      { "key": "member_id", "label": "รหัสสมาชิก", "type": "text" },
+      { "key": "class_id", "label": "รหัสคลาส", "type": "text" },
       { "key": "book_date", "label": "วันที่จอง", "type": "datetime-local" },
-      { "key": "status", "label": "สถานะ", "type": "select",
-        "options": [ "CONFIRMED", "CANCELLED" ] } ] }
-  
+      {
+        "key": "status", "label": "สถานะ", "type": "select",
+        "options": ["confirmed", "cancelled"]
+      }]
+  }
+
 };
 
 let current = Object.keys(ENTITIES)[0];
