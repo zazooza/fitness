@@ -42,7 +42,7 @@ const ENTITIES = {
     "idKey": "class_id",
     "search": [
       { "key": "name", "label": "ชื่อคลาส", "type": "text" },
-      { "key": "room", "label": "ห้อง", "type": "select","options": [] }],
+      { "key": "room", "label": "ห้อง", "type": "text" }],
     "form": [
       { "key": "name", "label": "ชื่อคลาส", "type": "text" },
       { "key": "trainer_id", "label": "เทรนเนอร์", "type": "select", "options": [] },
